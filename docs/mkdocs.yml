@@ -1,4 +1,4 @@
-site_name: Security Delivery Lab Handbook
+site_name: VulnGrid Handbook
 theme:
   name: material
 nav:
@@ -6,7 +6,7 @@ nav:
   - OWASP Top 10: owasp-top10.md
   - CWE Mappings: cwe-mappings.md
   - Secure SDLC Checklist: sdlc-checklist.md
-repo_url: https://github.com/tarnishedcoder/security-delivery-lab
+repo_url: https://github.com/tarnishedcoder/VulnGrid
 plugins:
   - search
 markdown_extensions:

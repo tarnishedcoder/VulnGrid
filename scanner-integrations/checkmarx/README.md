@@ -1,7 +1,7 @@
 # Checkmarx Wrapper
 
 Thin wrapper that reads a static JSON export from Checkmarx and pushes each
-finding to the Security Delivery Lab API.
+finding to the VulnGrid API.
 
 ## How to use
 

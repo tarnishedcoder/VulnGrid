@@ -1,4 +1,4 @@
-# Security Delivery Lab Handbook
+# VulnGrid Handbook
 
 End-to-end showcase of a full Application Security / DevSecOps pipeline:
 ingest findings from SAST/SCA/DAST tools, enrich with EPSS, risk-score with

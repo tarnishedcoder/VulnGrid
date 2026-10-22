@@ -1,4 +1,4 @@
-# Security Delivery Lab 🚀
+# VulnGrid 🚀
 
 > End-to-end open-source showcase of a **full Application Security / DevSecOps pipeline**.
 
@@ -18,8 +18,8 @@
 
 ```bash
 # 1. Clone the repo
-git clone https://github.com/tarnishedcoder/security-delivery-lab.git
-cd security-delivery-lab
+git clone https://github.com/tarnishedcoder/VulnGrid.git
+cd VulnGrid
 
 # 2. (Optional) configure secrets
 cp .env.example .env   # fill in GITHUB_* values for bot + remediation

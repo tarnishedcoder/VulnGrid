@@ -78,7 +78,7 @@ def webhook():
 
     async def run():
         async with aiohttp.ClientSession() as session:
-            gh = gh_aiohttp.GitHubAPI(session, "security-delivery-lab-bot", oauth_token=create_jwt())
+            gh = gh_aiohttp.GitHubAPI(session, "vulngrid-bot", oauth_token=create_jwt())
             await router.dispatch(event, gh)
 
     try:

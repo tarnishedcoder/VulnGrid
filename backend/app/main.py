@@ -14,7 +14,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="Security Delivery Lab API",
+    title="VulnGrid API",
     description="FastAPI service that stores normalized findings and EPSS scores.",
     version="0.1.0",
     lifespan=lifespan,
