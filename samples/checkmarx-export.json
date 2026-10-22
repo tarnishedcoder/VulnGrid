@@ -1,0 +1,32 @@
+[
+  {
+    "category": "SQL Injection",
+    "description": "User input concatenated into SQL query without parameterization.",
+    "fileName": "src/main.py",
+    "line": 42,
+    "cve": "CVE-2023-12345",
+    "cweId": "89",
+    "cvssScore": 9.1,
+    "severity": "Critical"
+  },
+  {
+    "category": "OS Command Injection",
+    "description": "Unvalidated input passed to subprocess shell.",
+    "fileName": "src/utils.py",
+    "line": 17,
+    "cve": null,
+    "cweId": "78",
+    "cvssScore": 8.4,
+    "severity": "High"
+  },
+  {
+    "category": "Hardcoded Secret",
+    "description": "Hardcoded API key found in source file.",
+    "fileName": "src/config.py",
+    "line": 5,
+    "cve": null,
+    "cweId": "798",
+    "cvssScore": 5.3,
+    "severity": "Medium"
+  }
+]

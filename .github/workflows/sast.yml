@@ -1,0 +1,41 @@
+name: SAST Scan
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  sast:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install deps
+        run: pip install -r scanner-integrations/requirements.txt
+
+      - name: Start backend
+        run: |
+          docker compose up -d backend
+          for i in $(seq 1 30); do
+            if curl -fsS http://localhost:8000/health; then exit 0; fi
+            sleep 2
+          done
+          echo "backend did not become healthy" >&2
+          exit 1
+
+      - name: Run Checkmarx stub (replace with real CLI)
+        run: python scanner-integrations/checkmarx/upload.py samples/checkmarx-export.json
+        env:
+          BACKEND_URL: http://localhost:8000
+
+      - name: Verify findings were ingested
+        run: |
+          count=$(curl -fsS http://localhost:8000/findings/ | python -c "import sys,json; print(len(json.load(sys.stdin)))")
+          echo "findings in API: $count"
+          test "$count" -gt 0

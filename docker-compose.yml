@@ -1,0 +1,70 @@
+services:
+  # -------------------------------------------------
+  # FastAPI backend (exposes /findings, /epss, /health)
+  # -------------------------------------------------
+  backend:
+    build: ./backend
+    container_name: sec_backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - backend_db:/app/db
+    environment:
+      - SQLITE_FILE=/app/db/sqlite.db
+
+  # -------------------------------------------------
+  # EPSS service (one-off sync at start, then exits;
+  # use the `epss` profile / cron for nightly runs)
+  # -------------------------------------------------
+  epss:
+    build: ./epss-service
+    container_name: sec_epss
+    environment:
+      - BACKEND_URL=http://backend:8000
+    depends_on:
+      - backend
+
+  # -------------------------------------------------
+  # React dashboard (Vite dev server on 3000)
+  # -------------------------------------------------
+  dashboard:
+    build: ./dashboard
+    container_name: sec_dashboard
+    ports:
+      - "3000:3000"
+    environment:
+      - VITE_BACKEND_URL=http://localhost:8000
+    depends_on:
+      - backend
+
+  # -------------------------------------------------
+  # PR security bot (Flask webhook receiver on 8080)
+  # -------------------------------------------------
+  pr_bot:
+    build: ./pr-security-bot
+    container_name: sec_pr_bot
+    ports:
+      - "8080:8080"
+    environment:
+      - GITHUB_APP_ID=${GITHUB_APP_ID:-}
+      - GITHUB_PRIVATE_KEY=${GITHUB_PRIVATE_KEY:-}
+      - GITHUB_WEBHOOK_SECRET=${GITHUB_WEBHOOK_SECRET:-}
+      - BACKEND_URL=http://backend:8000
+    depends_on:
+      - backend
+
+  # -------------------------------------------------
+  # Remediation automation – run ad-hoc, does not stay up
+  # -------------------------------------------------
+  remediation:
+    build: ./remediation-automation
+    container_name: sec_remediation
+    environment:
+      - GITHUB_TOKEN=${GITHUB_TOKEN:-}
+      - GITHUB_REPO=${GITHUB_REPO:-}
+      - BACKEND_URL=http://backend:8000
+    profiles:
+      - tools
+
+volumes:
+  backend_db:

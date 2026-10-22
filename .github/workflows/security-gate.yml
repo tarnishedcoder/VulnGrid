@@ -1,0 +1,82 @@
+name: Security Gate
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      demo_failure:
+        description: "Seed a high-risk (Log4Shell) finding to demonstrate the gate blocking"
+        type: boolean
+        default: false
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install deps
+        run: pip install requests
+
+      - name: Start backend
+        run: |
+          docker compose up -d backend
+          for i in $(seq 1 30); do
+            if curl -fsS http://localhost:8000/health; then exit 0; fi
+            sleep 2
+          done
+          echo "backend did not become healthy" >&2
+          exit 1
+
+      - name: Ingest sample findings
+        run: |
+          pip install -r scanner-integrations/requirements.txt
+          python scanner-integrations/checkmarx/upload.py samples/checkmarx-export.json
+        env:
+          BACKEND_URL: http://localhost:8000
+
+      - name: Seed high-risk finding (demo mode only)
+        if: inputs.demo_failure == true
+        run: |
+          python - <<'PY'
+          import os, requests
+          api = os.getenv("BACKEND_URL", "http://localhost:8000").rstrip("/")
+          r = requests.post(f"{api}/findings/", json={
+              "tool": "Demo", "title": "Log4Shell (CVE-2021-44228)",
+              "description": "RCE in log4j - actively exploited in the wild.",
+              "file_path": "pom.xml", "cve": "CVE-2021-44228",
+              "cwe": 502, "cvss": 10.0, "severity": "Critical", "status": "new",
+          })
+          r.raise_for_status()
+          r = requests.post(f"{api}/epss/", json={"cve": "CVE-2021-44228", "epss": 0.97})
+          r.raise_for_status()
+          print("seeded Log4Shell finding with EPSS=0.97")
+          PY
+        env:
+          BACKEND_URL: http://localhost:8000
+
+      - name: Security gate check (fail if CVSS >= 7.0 and EPSS >= 0.2)
+        env:
+          BACKEND_URL: http://localhost:8000
+        run: |
+          python - <<'PY'
+          import os, sys, requests
+          api = os.getenv("BACKEND_URL", "http://localhost:8000").rstrip("/")
+          r = requests.get(f"{api}/findings/")
+          r.raise_for_status()
+          findings = r.json()
+          high = [f for f in findings if (f.get('cvss') or 0) >= 7.0 and (f.get('epss') or 0) >= 0.2]
+          print(f"evaluated {len(findings)} finding(s)")
+          if high:
+              print("High-risk findings detected:")
+              for f in high:
+                  print(f" - {f['title']} (CVSS={f.get('cvss')}, EPSS={f.get('epss')})")
+              sys.exit(1)
+          print("No high-risk findings - gate passed")
+          PY

@@ -1,0 +1,15 @@
+site_name: Security Delivery Lab Handbook
+theme:
+  name: material
+nav:
+  - Home: index.md
+  - OWASP Top 10: owasp-top10.md
+  - CWE Mappings: cwe-mappings.md
+  - Secure SDLC Checklist: sdlc-checklist.md
+repo_url: https://github.com/tarnishedcoder/security-delivery-lab
+plugins:
+  - search
+markdown_extensions:
+  - admonition
+  - toc:
+      permalink: true
