@@ -1,8 +1,8 @@
-# VulnGrid 🚀
+# VulnGrid 
 
 > End-to-end open-source showcase of a **full Application Security / DevSecOps pipeline**.
 
-## 📦 What's inside?
+##  What's inside?
 
 | Component | Description |
 |-----------|-------------|
@@ -14,7 +14,7 @@
 | **remediation-automation** | Script that creates a GitHub Issue for a given CVE, pre-filled with CVSS/EPSS/remediation template. |
 | **docs** | MkDocs handbook – OWASP Top 10, CWE mapping, SSDLC checklist. |
 
-## 🚀 Quick start (local)
+##  Quick start (local)
 
 ```bash
 # 1. Clone the repo
@@ -43,7 +43,7 @@ docker compose run --rm epss
 
 You should now see the uploaded findings in the dashboard with risk scores.
 
-## 🧪 Without Docker (backend only)
+##  Without Docker (backend only)
 
 ```bash
 python -m venv .venv
@@ -53,7 +53,7 @@ set SQLITE_FILE=%CD%\backend\app\db\sqlite.db
 uvicorn backend.app.main:app --reload --port 8000
 ```
 
-## 🔌 API cheat sheet
+##  API cheat sheet
 
 ```bash
 # Create
@@ -76,14 +76,14 @@ python remediation-automation/create_ticket.py CVE-2023-12345
 Risk formula: `risk = round(cvss × epss × 10, 2)` → 0–100.
 CI gate fails a PR when any finding has `CVSS ≥ 7.0 and EPSS ≥ 0.2`.
 
-## 🤖 PR bot setup
+##  PR bot setup
 
 1. GitHub → Settings → Developer settings → GitHub Apps → New GitHub App.
 2. Webhook URL `http://<host>:8080/`, secret → `GITHUB_WEBHOOK_SECRET`.
 3. Permissions: Pull requests (read), Issues/PR comments (write).
 4. Install on your repo, open a PR → bot comments + finding appears on dashboard.
 
-## 📚 Docs
+##  Docs
 
 ```bash
 pip install mkdocs-material
@@ -92,7 +92,7 @@ mkdocs serve -f docs/mkdocs.yml   # http://127.0.0.1:8000
 
 Published to GitHub Pages by `.github/workflows/docs.yml`.
 
-## 🛠️ Tech stack (all free / open-source)
+##  Tech stack (all free / open-source)
 
 API: FastAPI, SQLModel, SQLite (swap `SQLITE_FILE`/engine URL for Postgres) ·
 CI: GitHub Actions · Dashboard: React 18 + Vite + MUI ·
